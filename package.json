@@ -1,5 +1,5 @@
 {
-  "name": "@pedrofariasx/antigravity-openai-adapter",
+  "name": "@pflabs/antigravity-openai-adapter",
   "version": "1.0.0",
   "description": "OpenAI-compatible API adapter for antigravity-claude-proxy. Converts OpenAI Chat Completions format to Anthropic Messages API format.",
   "main": "src/index.js",

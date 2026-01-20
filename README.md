@@ -33,10 +33,10 @@ Um adaptador que expõe uma **API compatível com OpenAI** para se comunicar com
 
 ```bash
 # Executar diretamente com npx (sem instalação)
-npx @pedrofariasx/antigravity-openai-adapter start
+npx @pflabs/antigravity-openai-adapter start
 
 # Ou instalar globalmente
-npm install -g @pedrofariasx/antigravity-openai-adapter
+npm install -g @pflabs/antigravity-openai-adapter
 antigravity-openai-adapter start
 ```
 

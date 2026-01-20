@@ -106,7 +106,7 @@ curl http://localhost:8081/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer test" \
   -d '{
-    "model": "gpt-4",
+    "model": "gemini-3-flash",
     "messages": [
       {"role": "user", "content": "Hello!"}
     ]
@@ -120,7 +120,7 @@ curl http://localhost:8081/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer test" \
   -d '{
-    "model": "gpt-4",
+    "model": "gemini-3-flash",
     "messages": [
       {"role": "user", "content": "Escreva um poema curto"}
     ],
@@ -194,7 +194,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="gpt-4",
+    model="gemini-3-flash",
     messages=[
         {"role": "user", "content": "Hello!"}
     ]
@@ -214,7 +214,7 @@ const client = new OpenAI({
 });
 
 const response = await client.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gemini-3-flash',
     messages: [
         { role: 'user', content: 'Hello!' }
     ]
@@ -230,7 +230,7 @@ curl http://localhost:8081/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer test" \
   -d '{
-    "model": "gpt-4",
+    "model": "gemini-3-flash",
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
 ```

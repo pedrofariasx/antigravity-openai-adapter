@@ -54,7 +54,7 @@ docker run -p 8081:8081 antigravity-openai-adapter
 ### Opção 2: Clonar Repositório
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/pedrofariasx/antigravity-openai-adapter
 cd antigravity-openai-adapter
 npm install
 npm start
@@ -312,7 +312,7 @@ Certifique-se de que está usando um ID de modelo válido que o `antigravity-cla
 
 ```bash
 # Clone o repositório
-git clone <repository-url>
+git clone https://github.com/pedrofariasx/antigravity-openai-adapter
 cd antigravity-openai-adapter
 
 # Instalar dependências

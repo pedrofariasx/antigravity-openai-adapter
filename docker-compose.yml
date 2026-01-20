@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  openai-adapter:
+    build: .
+    container_name: antigravity-openai-adapter
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - UPSTREAM_URL=http://host.docker.internal:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

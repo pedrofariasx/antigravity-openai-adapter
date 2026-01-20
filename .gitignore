@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Config files with secrets
+config.json
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+dist/
+build/
+
+# Environment
+.env
+.env.local

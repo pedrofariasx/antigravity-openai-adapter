@@ -1,0 +1,36 @@
+{
+  "name": "antigravity-openai-adapter",
+  "version": "1.0.0",
+  "description": "OpenAI-compatible API adapter for antigravity-claude-proxy. Converts OpenAI Chat Completions format to Anthropic Messages API format.",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "antigravity-openai-adapter": "bin/cli.js"
+  },
+  "files": [
+    "src",
+    "bin"
+  ],
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node tests/run-all.js"
+  },
+  "keywords": [
+    "openai",
+    "anthropic",
+    "claude",
+    "antigravity",
+    "proxy",
+    "adapter"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}

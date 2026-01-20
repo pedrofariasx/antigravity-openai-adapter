@@ -23,7 +23,7 @@ Um adaptador que expõe uma **API compatível com OpenAI** para se comunicar com
 ## Pré-requisitos
 
 - **Node.js** 18 ou superior
-- **antigravity-claude-proxy** rodando (padrão: http://localhost:8080)
+- **[antigravity-claude-proxy](https://github.com/badri-s2001/antigravity-claude-proxy)** rodando (padrão: http://localhost:8080)
 
 ---
 

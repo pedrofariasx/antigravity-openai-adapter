@@ -29,15 +29,26 @@ Um adaptador que expõe uma **API compatível com OpenAI** para se comunicar com
 
 ## Instalação
 
-### Opção 1: npm
+### Opção 1: npm / npx
 
 ```bash
 # Executar diretamente com npx (sem instalação)
-npx antigravity-openai-adapter start
+npx @pedrofariasx/antigravity-openai-adapter start
 
 # Ou instalar globalmente
-npm install -g antigravity-openai-adapter
+npm install -g @pedrofariasx/antigravity-openai-adapter
 antigravity-openai-adapter start
+```
+
+### Opção 2: Docker
+
+```bash
+# Usando Docker Compose
+docker-compose up -d
+
+# Ou build direto
+docker build -t antigravity-openai-adapter .
+docker run -p 8081:8081 antigravity-openai-adapter
 ```
 
 ### Opção 2: Clonar Repositório

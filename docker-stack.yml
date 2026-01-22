@@ -29,7 +29,7 @@ services:
       - yournet
 
     volumes:
-      - antigavity-openai-adapter_data:/root/.config/antigravity-openai-adapter
+      - antigavity-openai-adapter_data:/root/
 
 volumes:
   antigavity-openai-adapter_data:

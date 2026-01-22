@@ -6,8 +6,43 @@
 import app from './server.js';
 import { config } from './config.js';
 import { logger } from './utils/logger.js';
+import { spawn } from 'child_process';
 
 const PORT = config.port;
+
+/**
+ * Start the upstream proxy automatically if configured
+ */
+function startProxy() {
+    if (!config.autoStartProxy) return;
+
+    // Check if upstream is localhost, if not, don't auto-start
+    if (!config.upstreamUrl.includes('localhost') && !config.upstreamUrl.includes('127.0.0.1')) {
+        logger.info('Upstream is not localhost, skipping auto-start of proxy');
+        return;
+    }
+
+    logger.info('Starting antigravity-claude-proxy...');
+    
+    const proxy = spawn('npx', ['antigravity-claude-proxy@latest', 'start'], {
+        stdio: 'inherit',
+        shell: true
+    });
+
+    proxy.on('error', (err) => {
+        logger.error(`Failed to start proxy: ${err.message}`);
+    });
+
+    proxy.on('exit', (code) => {
+        if (code !== 0 && code !== null) {
+            logger.error(`Proxy exited with code ${code}`);
+        }
+    });
+
+    // Handle proxy shutdown when adapter shuts down
+    process.on('SIGINT', () => proxy.kill());
+    process.on('SIGTERM', () => proxy.kill());
+}
 
 // Start server
 app.listen(PORT, () => {
@@ -34,6 +69,9 @@ app.listen(PORT, () => {
     if (config.debug) {
         logger.info('Debug mode: enabled');
     }
+
+    // Auto-start proxy if needed
+    startProxy();
 });
 
 // Handle graceful shutdown

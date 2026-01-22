@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  antigavity-openai-adapter:
+    image: antigravity-openai-adapter:latest
+    build: .
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        # Host for both API (OpenAI) and WebUI (via transparent proxy)
+        - "traefik.http.routers.antigavity-openai-adapter.rule=Host(`agadapter.yourhost.com`)"
+        - "traefik.http.routers.antigavity-openai-adapter.entrypoints=websecure"
+        - "traefik.http.routers.antigavity-openai-adapter.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.antigavity-openai-adapter.loadbalancer.server.port=8081"
+
+    environment:
+      - NODE_ENV=production
+      - PORT=8081
+      # Localhost is fine because the adapter starts the proxy in the same container
+      - UPSTREAM_URL=http://localhost:8080
+      - AUTO_START_PROXY=true
+      # - API_KEY=your_api_key_here
+      # - UPSTREAM_API_KEY=test
+
+    networks:
+      - yournet
+
+    volumes:
+      - antigavity-openai-adapter_data:/root/.config/antigravity-openai-adapter
+
+volumes:
+  antigavity-openai-adapter_data:
+
+networks:
+  yournet:
+    external: true

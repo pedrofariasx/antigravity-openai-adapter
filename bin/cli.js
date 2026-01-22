@@ -23,6 +23,7 @@ Options:
   --upstream=<url>     Upstream antigravity-claude-proxy URL
                 (default: http://localhost:8080)
   --debug              Enable debug logging
+  --no-proxy           Disable automatic starting of antigravity-claude-proxy
   --help, -h           Show this help message
 
 Environment Variables:
@@ -32,6 +33,7 @@ Environment Variables:
   API_KEY              API key for this adapter (optional)
   UPSTREAM_API_KEY     API key for upstream proxy
   ANTHROPIC_AUTH_TOKEN Alternative to UPSTREAM_API_KEY
+  AUTO_START_PROXY=false Disable automatic starting of proxy
   DEBUG=true           Enable debug mode
 
 Examples:

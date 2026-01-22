@@ -5,6 +5,7 @@
 import { homedir } from 'os';
 import { join } from 'path';
 import { readFileSync, existsSync } from 'fs';
+import 'dotenv/config';
 
 // Default configuration
 const defaults = {
@@ -27,7 +28,10 @@ const defaults = {
     modelsCacheTtl: 5 * 60 * 1000,
 
     // Enable debug logging
-    debug: false
+    debug: false,
+
+    // Automatically start antigravity-claude-proxy
+    autoStartProxy: true
 };
 
 /**
@@ -76,6 +80,9 @@ function loadConfig() {
     if (process.env.DEBUG === 'true') {
         config.debug = true;
     }
+    if (process.env.AUTO_START_PROXY === 'false') {
+        config.autoStartProxy = false;
+    }
 
     // Command line arguments
     const args = process.argv.slice(2);
@@ -90,6 +97,8 @@ function loadConfig() {
             config.upstreamUrl = args[i].split('=')[1];
         } else if (args[i] === '--debug') {
             config.debug = true;
+        } else if (args[i] === '--no-proxy') {
+            config.autoStartProxy = false;
         }
     }
 

@@ -6,6 +6,7 @@
 import express from 'express';
 import cors from 'cors';
 import crypto from 'crypto';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { convertOpenAIToAnthropic } from './format/openai-to-anthropic.js';
 import { convertAnthropicToOpenAI, convertStreamEvent, createErrorResponse } from './format/anthropic-to-openai.js';
 import { logger } from './utils/logger.js';
@@ -358,16 +359,25 @@ app.post('/v1/completions', (req, res) => {
 });
 
 /**
- * Catch-all for unsupported endpoints
+ * Catch-all for other endpoints - proxy to upstream (WebUI, etc)
  */
-app.use('*', (req, res) => {
-    if (logger.isDebugEnabled) {
-        logger.debug(`[API] 404 Not Found: ${req.method} ${req.originalUrl}`);
+app.use('/', createProxyMiddleware({
+    target: config.upstreamUrl,
+    changeOrigin: true,
+    ws: true, // Support WebSockets if needed
+    logLevel: config.debug ? 'debug' : 'error',
+    onProxyReq: (proxyReq, req, res) => {
+        // Log proxying in debug mode
+        if (config.debug) {
+            logger.debug(`[Proxy] Forwarding ${req.method} ${req.url} to upstream`);
+        }
+    },
+    onError: (err, req, res) => {
+        logger.error(`[Proxy] Error: ${err.message}`);
+        if (!res.headersSent) {
+            res.status(502).json(createErrorResponse('Upstream proxy unreachable', 'proxy_error', 502));
+        }
     }
-    res.status(404).json(createErrorResponse(
-        `Endpoint ${req.method} ${req.originalUrl} not found`,
-        'not_found_error'
-    ));
-});
+}));
 
 export default app;

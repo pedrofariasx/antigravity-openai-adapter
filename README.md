@@ -2,56 +2,57 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Um adaptador que expõe uma **API compatível com OpenAI** para se comunicar com o **antigravity-claude-proxy**. Isso permite usar aplicações que esperam a API OpenAI com os modelos Claude e Gemini disponíveis atravésdo Antigravity.
+An adapter that exposes an **OpenAI-compatible API** to communicate with **antigravity-claude-proxy**. This allows using applications that expect the OpenAI API with Claude and Gemini models available through Antigravity.
 
-## Como Funciona
+## How it Works
 
 ```
 ┌──────────────────┐     ┌─────────────────────┐     ┌────────────────────────────┐
-│  Aplicação com   │────▶│  Este Adaptador     │────▶│  antigravity-claude-proxy  │
-│  API OpenAI      │     │  (OpenAI → Anthropic│     │  (Anthropic → Google│
+│  OpenAI-enabled  │────▶│  This Adapter       │────▶│  antigravity-claude-proxy  │
+│  Application     │     │  (OpenAI → Anthropic│     │  (Anthropic → Google       │
 │  (Chat API)      │     │   format)           │     │   Generative AI)           │
 └──────────────────┘     └─────────────────────┘     └────────────────────────────┘
 ```
 
-1. Recebe requisições no formato **OpenAI Chat Completions API**
-2. Converte para formato **Anthropic Messages API**
-3. Encaminha para o **antigravity-claude-proxy**
-4. Converte as respostas de volta para formato **OpenAI**
-5. Suporta **streaming** (SSE) completo
+1. Receives requests in **OpenAI Chat Completions API** format.
+2. Converts to **Anthropic Messages API** format.
+3. Forwards to **antigravity-claude-proxy**.
+4. Converts responses back to **OpenAI** format.
+5. Supports full **streaming** (SSE).
+6. **Automatic Proxy Management**: Can automatically start the upstream proxy if it's running on localhost.
+7. **Transparent Routing**: Unknown routes (like WebUI) are automatically proxied to the upstream.
 
-## Pré-requisitos
+## Prerequisites
 
-- **Node.js** 18 ou superior
-- **[antigravity-claude-proxy](https://github.com/badri-s2001/antigravity-claude-proxy)** rodando (padrão: http://localhost:8080)
+- **Node.js** 18 or higher
+- **antigravity-claude-proxy** (automatically handled if on localhost, otherwise needs to be running)
 
 ---
 
-## Instalação
+## Installation
 
-### Opção 1: npm / npx
+### Option 1: npm / npx
 
 ```bash
-# Executar diretamente com npx (sem instalação)
-npx @pflabs/antigravity-openai-adapter start
+# Run directly with npx (automatic proxy start)
+npx @pedrofariasx/antigravity-openai-adapter start
 
-# Ou instalar globalmente
-npm install -g @pflabs/antigravity-openai-adapter
+# Or install globally
+npm install -g @pedrofariasx/antigravity-openai-adapter
 antigravity-openai-adapter start
 ```
 
-### Opção 2: Docker
+### Option 2: Docker
 
 ```bash
-# Usando Docker Compose
+# Using Docker Compose
 docker-compose up -d
 
-# Ou build direto
-docker build -t antigravity-openai-adapter .
-docker run -p 8081:8081 antigravity-openai-adapter
+# Using Docker Stack (Swarm)
+docker stack deploy -c docker-stack.yml antigravity
 ```
 
-### Opção 2: Clonar Repositório
+### Option 3: Clone Repository
 
 ```bash
 git clone https://github.com/pedrofariasx/antigravity-openai-adapter
@@ -62,277 +63,105 @@ npm start
 
 ---
 
-## Início Rápido
+## Quick Start
 
-### 1. Iniciar o antigravity-claude-proxy
-
-Primeiro, certifique-se que o antigravity-claude-proxy está rodando:
+### 1. Start the Adapter
 
 ```bash
-npx antigravity-claude-proxy start
-# Roda em http://localhost:8080
+npx @pedrofariasx/antigravity-openai-adapter start
 ```
 
-### 2. Iniciar o Adaptador OpenAI
+By default, the adapter will:
+1. Start on `http://localhost:8081`.
+2. Check if `antigravity-claude-proxy` is needed.
+3. Automatically run `npx antigravity-claude-proxy@latest start` if the upstream is configured to `localhost`.
+4. Proxy all non-API requests (like the WebUI) to the upstream proxy.
 
-```bash
-antigravity-openai-adapter start
-# Roda em http://localhost:8081
-```
+### 2. Use with OpenAI Applications
 
-### 3. Usar com aplicações OpenAI
-
-Configure sua aplicação para usar:
+Configure your application to use:
 
 ```
 Base URL: http://localhost:8081/v1
-API Key: qualquer-valor (ou configure uma chave específica)
+API Key: any-value (or your configured API_KEY)
 ```
 
 ---
 
-## Endpoints da API
+## API Endpoints
 
-| Endpoint | Método | Descrição |
+| Endpoint | Method | Description |
 |----------|--------|-----------|
-| `/v1/chat/completions` | POST | Chat Completions (principal) |
-| `/v1/models` | GET | Listar modelos disponíveis |
-| `/health` | GET | Verificação de saúde |
-
-### Exemplo de Requisição
-
-```bash
-curl http://localhost:8081/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer test" \
-  -d '{
-    "model": "gemini-3-flash",
-    "messages": [
-      {"role": "user", "content": "Hello!"}
-    ]
-  }'
-```
-
-### Exemplo com Streaming
-
-```bash
-curl http://localhost:8081/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer test" \
-  -d '{
-    "model": "gemini-3-flash",
-    "messages": [
-      {"role": "user", "content": "Escreva um poema curto"}
-    ],
-    "stream": true
-  }'
-```
+| `/v1/chat/completions` | POST | Chat Completions (main) |
+| `/v1/models` | GET | List available models |
+| `/health` | GET | Health Check |
+| `/*` | * | Proxied to antigravity-claude-proxy (WebUI, etc) |
 
 ---
 
-## Modelos Disponíveis
+## Configuration
 
-O adaptador não faz mapeamento automático de modelos. Os modelos disponíveis são exatamente os mesmos fornecidos pelo `antigravity-claude-proxy`.
+The adapter supports configuration via `config.json`, environment variables, or CLI arguments. It also supports `.env` files.
 
-Para ver a lista de modelos suportados, acesse o endpoint `/v1/models` ou verifique a documentação do proxy original.
+### Environment Variables
 
-Modelos comuns incluem:
-- `claude-opus-4-5-thinking`
-- `claude-sonnet-4-5-thinking`
-- `claude-sonnet-4-5`
-- `gemini-3-pro-high`
-- `gemini-3-flash`
-
----
-
-## Configuração
-
-### Variáveis de Ambiente
-
-| Variável | Descrição | Padrão |
+| Variable | Description | Default |
 |----------|-----------|--------|
-| `PORT` | Porta do servidor | `8081` |
-| `UPSTREAM_URL` | URL do antigravity-claude-proxy | `http://localhost:8080` |
-| `ANTHROPIC_BASE_URL` | Alternativa ao UPSTREAM_URL | - |
-| `API_KEY` | Chave API para este adaptador | - |
-| `UPSTREAM_API_KEY` | Chave API para o upstream | `test` |
-| `ANTHROPIC_AUTH_TOKEN` | Alternativa ao UPSTREAM_API_KEY | - |
-| `DEBUG` | Habilitar logs de debug | `false` |
+| `PORT` | Server port | `8081` |
+| `UPSTREAM_URL` | antigravity-claude-proxy URL | `http://localhost:8080` |
+| `API_KEY` | API Key for this adapter | - |
+| `UPSTREAM_API_KEY` | API Key for upstream proxy | `test` |
+| `AUTO_START_PROXY` | Auto-start proxy via npx | `true` |
+| `DEBUG` | Enable debug logging | `false` |
 
-### Argumentos CLI
+### CLI Arguments
 
 ```bash
-antigravity-openai-adapter start --port=3000 --upstream=http://localhost:9000 --debug
+antigravity-openai-adapter start --port=3000 --upstream=http://localhost:9000 --no-proxy --debug
 ```
 
-### Arquivo de Configuração
-
-Crie `config.json` no diretório atual ou em `~/.config/antigravity-openai-adapter/config.json`:
-
-```json
-{
-  "port": 8081,
-  "upstreamUrl": "http://localhost:8080",
-  "apiKey": null,
-  "upstreamApiKey": "test",
-  "debug": false
-}
-```
+*   `--no-proxy`: Disables automatic starting of the upstream proxy.
 
 ---
 
-## Uso com Bibliotecas OpenAI
+## Features Supported
 
-### Python (openai)
-
-```python
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://localhost:8081/v1",
-    api_key="test"
-)
-
-response = client.chat.completions.create(
-    model="gemini-3-flash",
-    messages=[
-        {"role": "user", "content": "Hello!"}
-    ]
-)
-
-print(response.choices[0].message.content)
-```
-
-### Node.js (openai)
-
-```javascript
-import OpenAI from 'openai';
-
-const client = new OpenAI({
-    baseURL: 'http://localhost:8081/v1',
-    apiKey: 'test'
-});
-
-const response = await client.chat.completions.create({
-    model: 'gemini-3-flash',
-    messages: [
-        { role: 'user', content: 'Hello!' }
-    ]
-});
-
-console.log(response.choices[0].message.content);
-```
-
-### cURL
-
-```bash
-curl http://localhost:8081/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer test" \
-  -d '{
-    "model": "gemini-3-flash",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'
-```
-
----
-
-## Recursos Suportados
-
-### ✅ Suportado
+### ✅ Supported
 
 - Chat Completions API
 - Streaming (SSE)
 - System messages
 - Multi-turn conversations
 - Tool/Function calling
-- Vision (imagens)
-- Temperature, top_p, max_tokens
-- Stop sequences
+- Vision (Images)
+- Temperature, top_p, max_tokens, stop sequences
+- Unified routing for API and WebUI
 
-### ❌ Não Suportado
+### ❌ Not Supported
 
 - Embeddings (`/v1/embeddings`)
 - Legacy Completions (`/v1/completions`)
-- Audio/Speech APIs
-- Fine-tuning
-- Assistants API
-- Files API
+- Assistants API, Files API, Fine-tuning
 
 ---
 
-## Arquitetura
-
-```
-antigravity-openai-adapter/
-├── src/
-│   ├── index.js              # Entry point
-│   ├── server.js             # Express server
-│   ├── config.js             # Configuration
-│   ├── format/
-│   │   ├── openai-to-anthropic.js   # Request converter
-│   │   └── anthropic-to-openai.js   # Response converter
-│   └── utils/
-│       └── logger.js         # Logging utility
-├── bin/
-│   └── cli.js                # CLI entry point
-├── package.json
-└── README.md
-```
-
----
-
-## Troubleshooting
-
-### Erro de conexão com upstream
-
-```
-upstream: { status: 'unreachable' }
-```
-
-Verifique se o antigravity-claude-proxy está rodando:
-```bash
-curl http://localhost:8080/health
-```
-
-### Erro 401Unauthorized
-
-Configure a chave API correta:
-```bash
-UPSTREAM_API_KEY=sua-chave antigravity-openai-adapter start
-```
-
-### Modelo não encontrado
-
-Certifique-se de que está usando um ID de modelo válido que o `antigravity-claude-proxy` suporta.
-
----
-
-## Desenvolvimento
+## Development
 
 ```bash
-# Clone o repositório
+# Clone and install
 git clone https://github.com/pedrofariasx/antigravity-openai-adapter
 cd antigravity-openai-adapter
-
-# Instalar dependências
 npm install
 
-# Rodar em modo desenvolvimento (com watch)
+# Run in development mode (with watch)
 npm run dev
 
-# Rodar testes
+# Run tests
 npm test
 ```
 
 ---
 
-## Licença
+## License
 
 MIT
-
----
-
-## Relacionados
-
-- [antigravity-claude-proxy](https://github.com/badri-s2001/antigravity-claude-proxy) - Proxy principal Anthropic → Google Cloud Code

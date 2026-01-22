@@ -16,7 +16,7 @@ An adapter that exposes an **OpenAI-compatible API** to communicate with **antig
 
 1. Receives requests in **OpenAI Chat Completions API** format.
 2. Converts to **Anthropic Messages API** format.
-3. Forwards to **antigravity-claude-proxy**.
+3. Forwards to [**antigravity-claude-proxy**](https://github.com/badrisnarayanan/antigravity-claude-proxy).
 4. Converts responses back to **OpenAI** format.
 5. Supports full **streaming** (SSE).
 6. **Automatic Proxy Management**: Can automatically start the upstream proxy if it's running on localhost.

@@ -25,10 +25,10 @@ app.disable('x-powered-by');
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
 
 // API Key authentication middleware for /v1/* endpoints
-app.use('/v1', (req, res, next) => {
+// We apply express.json() ONLY to /v1 to avoid breaking the transparent proxy for other routes (like Dashboard)
+app.use('/v1', express.json({ limit: '50mb' }), (req, res, next) => {
     // Skip validation if apiKey is not configured
     if (!config.apiKey) {
         if (config.debug) logger.debug('[Auth] No API_KEY configured, skipping validation');

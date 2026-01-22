@@ -24,9 +24,22 @@ function startProxy() {
 
     logger.info('Starting antigravity-claude-proxy...');
     
-    const proxy = spawn('npx', ['antigravity-claude-proxy@latest', 'start'], {
+    // Parse the port from upstreamUrl
+    let proxyPort = 8080;
+    try {
+        const url = new URL(config.upstreamUrl);
+        proxyPort = url.port || 8080;
+    } catch (e) {
+        // Fallback to 8080
+    }
+
+    const proxy = spawn('npx', ['antigravity-claude-proxy@latest', 'start', `--port=${proxyPort}`], {
         stdio: 'inherit',
-        shell: true
+        shell: true,
+        env: {
+            ...process.env,
+            PORT: proxyPort // Ensure the proxy uses the correct port via ENV too
+        }
     });
 
     proxy.on('error', (err) => {

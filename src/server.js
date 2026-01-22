@@ -31,6 +31,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/v1', (req, res, next) => {
     // Skip validation if apiKey is not configured
     if (!config.apiKey) {
+        if (config.debug) logger.debug('[Auth] No API_KEY configured, skipping validation');
         return next();
     }
 
@@ -45,7 +46,12 @@ app.use('/v1', (req, res, next) => {
     }
 
     if (!providedKey || providedKey !== config.apiKey) {
-        logger.warn(`[API] Unauthorized request from ${req.ip}, invalid API key`);
+        logger.warn(`[API] Unauthorized request from ${req.ip}, invalid API key (provided: ${providedKey ? '***' + providedKey.slice(-3) : 'none'})`);
+        
+        if (config.debug) {
+            logger.debug(`[Auth] Comparison failed. Expected: ${config.apiKey}, Got: ${providedKey}`);
+        }
+        
         return res.status(401).json(createErrorResponse('Invalid or missing API key', 'authentication_error', 401));
     }
 

@@ -38,7 +38,9 @@ function startProxy() {
         shell: true,
         env: {
             ...process.env,
-            PORT: proxyPort // Ensure the proxy uses the correct port via ENV too
+            PORT: proxyPort, // Ensure the proxy uses the correct port via ENV too
+            // Override the API_KEY for the proxy to match what the adapter expects
+            API_KEY: config.upstreamApiKey || 'test'
         }
     });
 

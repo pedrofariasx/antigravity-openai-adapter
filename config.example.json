@@ -1,7 +1,7 @@
 {
   "port": 8081,
   "upstreamUrl": "http://localhost:8080",
-  "apiKey": null,
+  "apiKey": 123456,
   "upstreamApiKey": "test",
   "requestTimeout": 120000,
   "debug": false

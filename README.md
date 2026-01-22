@@ -1,4 +1,4 @@
-# Antigravity OpenAI Adapter
+# AGO Adapter (Antigravity OpenAI Adapter)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

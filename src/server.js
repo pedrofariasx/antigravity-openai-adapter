@@ -40,9 +40,9 @@ app.use('/v1', (req, res, next) => {
     let providedKey = '';
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
-        providedKey = authHeader.substring(7);
+        providedKey = authHeader.substring(7).trim();
     } else if (xApiKey) {
-        providedKey = xApiKey;
+        providedKey = xApiKey.trim();
     }
 
     if (!providedKey || providedKey !== config.apiKey) {

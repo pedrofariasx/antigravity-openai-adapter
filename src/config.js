@@ -69,7 +69,7 @@ function loadConfig() {
         config.upstreamUrl = process.env.ANTHROPIC_BASE_URL;
     }
     if (process.env.API_KEY) {
-        config.apiKey = process.env.API_KEY;
+        config.apiKey = process.env.API_KEY.trim();
     }
     if (process.env.UPSTREAM_API_KEY) {
         config.upstreamApiKey = process.env.UPSTREAM_API_KEY;

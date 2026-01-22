@@ -11,29 +11,28 @@ services:
       labels:
         - "traefik.enable=true"
         # Host for both API (OpenAI) and WebUI (via transparent proxy)
-        - "traefik.http.routers.antigravity-openai-adapter.rule=Host(`antigravity.pedrofarias.cloudns.be`)"
-        - "traefik.http.routers.antigravity-openai-adapter.entrypoints=websecure"
-        - "traefik.http.routers.antigravity-openai-adapter.tls.certresolver=letsencryptresolver"
-        - "traefik.http.services.antigravity-openai-adapter.loadbalancer.server.port=8081"
+        - "traefik.http.routers.antigavity-openai-adapter.rule=Host(`agadapter.yourhost.com`)"
+        - "traefik.http.routers.antigavity-openai-adapter.entrypoints=websecure"
+        - "traefik.http.routers.antigavity-openai-adapter.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.antigavity-openai-adapter.loadbalancer.server.port=8081"
 
     environment:
       - NODE_ENV=production
       - PORT=8081
       - UPSTREAM_URL=http://localhost:8080
       - AUTO_START_PROXY=true
-      - API_KEY=pedrofariasx
-      - UPSTREAM_API_KEY=test
-      - DEBUG=true
+      # - API_KEY=your_api_key_here
+      # - UPSTREAM_API_KEY=test
 
     networks:
-      - rede_interna
+      - yournet
 
     volumes:
-      - antigravity_data:/root/
+      - antigavity-openai-adapter_data:/root/
 
 volumes:
-  antigravity_data:
+  antigavity-openai-adapter_data:
 
 networks:
-  rede_interna:
+  yournet:
     external: true

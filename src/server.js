@@ -35,10 +35,13 @@ app.use('/v1', (req, res, next) => {
     }
 
     const authHeader = req.headers['authorization'];
+    const xApiKey = req.headers['x-api-key'];
     let providedKey = '';
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
         providedKey = authHeader.substring(7);
+    } else if (xApiKey) {
+        providedKey = xApiKey;
     }
 
     if (!providedKey || providedKey !== config.apiKey) {

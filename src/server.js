@@ -259,6 +259,9 @@ async function handleStreamingRequest(anthropicRequest, requestModel, res) {
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders();
 
+    // Track stream options
+    const includeUsage = !!anthropicRequest.openai_stream_options?.include_usage;
+
     // Make streaming request to upstream
     const response = await fetch(`${config.upstreamUrl}/v1/messages`, {
         method: 'POST',
@@ -322,6 +325,10 @@ async function handleStreamingRequest(anthropicRequest, requestModel, res) {
                         const openaiEvents = convertStreamEvent(anthropicEvent, requestModel, streamState);
 
                         for (const event of openaiEvents) {
+                            // Filter out usage chunks if not requested (standard OpenAI behavior)
+                            if (event.usage && !includeUsage && event.choices.length === 0) {
+                                continue;
+                            }
                             res.write(`data: ${JSON.stringify(event)}\n\n`);
                         }
 

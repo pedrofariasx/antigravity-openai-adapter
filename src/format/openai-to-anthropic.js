@@ -316,6 +316,7 @@ export function convertOpenAIToAnthropic(openaiRequest) {
         temperature,
         top_p,
         stream,
+        stream_options,
         tools,
         tool_choice,
         response_format,
@@ -337,7 +338,9 @@ export function convertOpenAIToAnthropic(openaiRequest) {
         model: mapModel(model || 'gpt-4'),
         messages: anthropicMessages,
         max_tokens: max_completion_tokens || max_tokens || 4096,
-        stream: stream || false
+        stream: stream || false,
+        // Pass through stream options internally for server logic
+        openai_stream_options: stream_options
     };
 
     // Add system if present

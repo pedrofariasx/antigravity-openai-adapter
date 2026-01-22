@@ -304,7 +304,7 @@ export function convertStreamEvent(anthropicEvent, requestModel, state = {}) {
                     }]
                 });
             }
-
+ 
             // Include usage in final chunk if available
             if (anthropicEvent.usage) {
                 state.usage = {
@@ -312,6 +312,17 @@ export function convertStreamEvent(anthropicEvent, requestModel, state = {}) {
                     completion_tokens: anthropicEvent.usage.output_tokens || 0,
                     total_tokens: (anthropicEvent.usage.input_tokens || 0) + (anthropicEvent.usage.output_tokens || 0)
                 };
+
+                // OpenAI expects a final chunk with usage if stream_options: { include_usage: true } is set
+                // or just to have usage in the last choice block.
+                events.push({
+                    id: responseId,
+                    object: 'chat.completion.chunk',
+                    created,
+                    model: requestModel,
+                    choices: [], // Usage chunks often have empty choices
+                    usage: state.usage
+                });
             }
             break;
 

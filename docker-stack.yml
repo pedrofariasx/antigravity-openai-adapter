@@ -19,7 +19,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8081
-      # Localhost is fine because the adapter starts the proxy in the same container
       - UPSTREAM_URL=http://localhost:8080
       - AUTO_START_PROXY=true
       # - API_KEY=your_api_key_here

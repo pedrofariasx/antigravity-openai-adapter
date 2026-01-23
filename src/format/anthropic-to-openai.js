@@ -31,7 +31,8 @@ function convertContent(content) {
     const toolCalls = [];
     let hasThinking = false;
     let thinkingContent = '';
-
+    const images = [];
+ 
     if (!content || !Array.isArray(content)) {
         return {
             message: { role: 'assistant', content: '' },
@@ -60,6 +61,17 @@ function convertContent(content) {
                         arguments: JSON.stringify(block.input || {})
                     }
                 });
+                break;
+
+            case 'image':
+                // Capture image blocks (Anthropic format)
+                if (block.source) {
+                    const mediaType = block.source.media_type || 'image/png';
+                    const data = block.source.data;
+                    if (data) {
+                        images.push(`data:${mediaType};base64,${data}`);
+                    }
+                }
                 break;
         }
     }
@@ -90,6 +102,17 @@ function convertContent(content) {
         // message.content = `<thought>\n${thinkingContent}\n</thought>\n\n${message.content || ''}`;
     }
 
+    // Handle generated images
+    if (images.length > 0) {
+        // OpenAI Chat API doesn't natively return images in content.
+        // We prepend them as markdown images or data URIs so the UI can render them.
+        const imageMarkdown = images.map(img => `\n![Generated Image](${img})\n`).join('');
+        message.content = (message.content || '') + imageMarkdown;
+        
+        // Also expose via custom field for advanced UIs
+        message.generated_images = images;
+    }
+ 
     return {
         message,
         hasToolCalls: toolCalls.length > 0
@@ -230,6 +253,21 @@ export function convertStreamEvent(anthropicEvent, requestModel, state = {}) {
             
             if (delta?.type === 'text_delta' && delta.text) {
                 // Text content
+                events.push({
+                    id: responseId,
+                    object: 'chat.completion.chunk',
+                    created,
+                    model: requestModel,
+                    choices: [{
+                        index: 0,
+                        delta: { content: delta.text },
+                        logprobs: null,
+                        finish_reason: null
+                    }]
+                });
+            } else if (delta?.type === 'text_delta' && delta.text) {
+                // Prepend image markdown if this is the first text chunk and we have images in state
+                // Note: Anthropic usually sends images as separate blocks, not deltas.
                 events.push({
                     id: responseId,
                     object: 'chat.completion.chunk',
